@@ -1,5 +1,7 @@
 NeuraLinks by Brittek™ Digital
 
+[Neuralinks](https://neuralinks.tiiny.site)
+
 NeuraLinks by Brittek™ Digital is an HTML project by Brittek™ Digital, a small studio based in Sydney City specializing in branding, web design, development, and more. Our goal is to bring your vision to the world wide web through innovative and modern designs.
 Overview
 
