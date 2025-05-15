@@ -1,0 +1,293 @@
+/* Base styles */
+:root {
+  /* Spacing and Layout */
+  --spacing: clamp(0.75rem, 2vw, 1rem);
+  --dock-width: min(80vw, 1200px);
+  --dock-min-width: min(344px, 90vw);
+  --dock-height: clamp(60px, 8vh, 80px);
+  --icon-size: clamp(20px, 3vw, 24px);
+  
+  /* Visual Properties */
+  --border-radius: clamp(8px, 1.5vw, 12px);
+  --blur-amount: 10px;
+  --transition-speed: 0.3s;
+  
+  /* Colors */
+  --bg-overlay: rgba(0, 0, 0, 0.75);
+  --dock-bg: rgba(64, 64, 64, 0.5);
+  --icon-gradient: linear-gradient(hsl(0 0% 100% / 0.15), transparent);
+  --icon-bg: hsl(0 0% 4%);
+  --icon-shadow: 0 -1px hsl(0 0% 0% / 0.5) inset,
+                 0 2px 4px hsl(0 0% 0% / 0.5),
+                 0 1px hsl(0 0% 100% / 0.5) inset;
+}
+
+/* Reset and Base Styles */
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Canvas */
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  will-change: transform;
+}
+
+/* Body */
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: #000;
+  background-image: url("https://assets.codepen.io/9806267/2_5.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+  color: white;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--bg-overlay);
+  z-index: 1;
+  backdrop-filter: blur(2px);
+}
+
+/* Controls */
+.controls {
+  position: fixed;
+  top: var(--spacing);
+  right: var(--spacing);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  color: white;
+  font-weight: 300;
+  align-items: center;
+  accent-color: #ff3b30;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  backdrop-filter: blur(4px);
+}
+
+label {
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  transition: opacity var(--transition-speed) ease;
+}
+
+label:hover {
+  opacity: 1;
+}
+
+/* Dock */
+.dock {
+  --spacing: var(--spacing);
+  overflow: hidden;
+  resize: horizontal;
+  width: var(--dock-width);
+  min-width: var(--dock-min-width);
+  max-width: calc(100% - 2rem);
+  max-height: calc(var(--dock-height) + (2 * var(--spacing)));
+  z-index: 2;
+}
+
+nav {
+  display: flex;
+  gap: var(--spacing);
+  padding: var(--spacing);
+  overflow: auto;
+  background: var(--dock-bg);
+  backdrop-filter: blur(var(--blur-amount));
+  border-radius: var(--border-radius);
+  clip-path: inset(0 0 0 0 round var(--border-radius));
+  scroll-snap-type: x mandatory;
+  scrollbar-color: hsl(0 0% 10% / 0.5) transparent;
+  scrollbar-width: thin;
+  box-shadow: 0 1px hsl(0 0% 100% / 0.5) inset;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  will-change: transform;
+}
+
+/* Links */
+a {
+  display: grid;
+  place-items: center;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  background: var(--icon-gradient), var(--icon-bg);
+  border-radius: 8px;
+  flex: 1 0 auto;
+  scroll-snap-align: center;
+  box-shadow: var(--icon-shadow);
+  transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+a:hover {
+  transform: scale(1.1);
+}
+
+a:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+a svg {
+  width: 65%;
+  color: white;
+  fill: currentColor;
+  transition: transform var(--transition-speed) ease;
+}
+
+/* Effects */
+:root:has(#blur:checked) a {
+  filter: blur(calc(var(--blur, 0) * 24px));
+}
+
+:root:has(#parallax:checked) a svg {
+  scale: var(--parallax, 0);
+}
+
+:root:has(#direction:checked) nav {
+  flex-direction: column;
+  scroll-snap-type: y mandatory;
+}
+
+:root:has(#direction:checked) .dock {
+  flex-direction: column;
+  min-width: 0;
+  max-height: calc(100vh - 2rem);
+  min-height: 340px;
+  width: unset;
+  resize: vertical;
+  max-width: calc(var(--icon-size) + (var(--spacing) * 2));
+}
+
+/* Animations */
+@supports (animation-timeline: scroll()) {
+  a {
+    animation-name: scale, scale;
+    animation-fill-mode: both;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-direction: normal, reverse;
+    animation-timeline: view(inline);
+    animation-range: entry 0% entry 150%, exit -50% exit 100%;
+  }
+
+  :root:has(#direction:checked) a {
+    animation-timeline: view();
+  }
+
+  @keyframes scale {
+    0% {
+      scale: 0.25;
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes blur {
+    0% {
+      scale: 0.25;
+      filter: blur(24px);
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  :root:has(#blur:checked) a {
+    animation-name: blur, blur;
+  }
+
+  :root:has(#parallax:checked) a svg {
+    scale: 1;
+    animation-name: icon, icon;
+    animation-fill-mode: both;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-direction: normal, reverse;
+    animation-timeline: view(inline);
+    animation-range: entry -50% entry 250%, exit -150% exit 150%;
+  }
+
+  @keyframes icon {
+    0% {
+      scale: 0;
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dock {
+    width: 100%;
+    max-width: none;
+  }
+  
+  .controls {
+    top: auto;
+    bottom: var(--spacing);
+    right: var(--spacing);
+    font-size: 0.85rem;
+  }
+  
+  nav {
+    padding: calc(var(--spacing) * 0.75);
+  }
+}
+
+/* High Contrast Mode */
+@media (forced-colors: active) {
+  a {
+    border: 1px solid CanvasText;
+  }
+  
+  .controls {
+    border: 1px solid CanvasText;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  a:hover {
+    transform: none;
+  }
+} 
